@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
-from utils import Nantozero,replace_text_with_zero
+from utils import Nantozero,replace_text_with_zero,Km_pca_show
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 # #读取文件
@@ -29,72 +30,57 @@ import matplotlib.pyplot as plt
 # df1 = c1.drop(columns=drop_colums)
 # df2 = c2.drop(columns=drop_colums)
 # df3 = c3.drop(columns=drop_colums)
-#
-#
+
+
 # #将处理后文件进行储存
 # df1.to_excel('file1.xlsx', index=False)
 # df2.to_excel('file2.xlsx', index=False)
 # df3.to_excel('file3.xlsx', index=False)
 
-##读取处理后的文件
-# f1=pd.read_excel('C:/Users/KDG/PycharmProjects/clurster/file1.xlsx')
-# # f2=pd.read_excel('C:/Users/KDG/PycharmProjects/clurster/file1.xlsx')
-# # f3=pd.read_excel('C:/Users/KDG/PycharmProjects/clurster/file1.xlsx')
+
+# # #将数据的空缺值，用0处理
+# file1=Nantozero('file1.xlsx')
+# file2=Nantozero('file2.xlsx')
+# file3=Nantozero('file3.xlsx')
+# # # print(file.iloc[:, 7:])
+# #
+# # # 去除dataframe里的字符串，使用 applymap 方法应用函数到整个 DataFrame
+# df1 = file1.iloc[:, 7:].applymap(replace_text_with_zero)
+# df2 = file2.iloc[:, 7:].applymap(replace_text_with_zero)
+# df3 = file3.iloc[:, 7:].applymap(replace_text_with_zero)
 #
-# print(f1.head(10))
-
-#将数据的空缺值，用0处理
-file1=Nantozero('file1.xlsx')
-# print(file1.iloc[:, 7:])
-
-# 去除dataframe里的字符串，使用 applymap 方法应用函数到整个 DataFrame
-df1 = file1.iloc[:, 7:].applymap(replace_text_with_zero)
-
-
-
-#使用kmeans方法，因为生物标准有5个等级，所以类别为5
-kmeans = KMeans(n_clusters=5)
-# 使用数据拟合 KMeans 模型
-kmeans.fit(df1)
-# 获取每个样本所属的簇
-labels = kmeans.labels_
-# 获取簇的中心点
-centroids = kmeans.cluster_centers_
+# # print(df.columns)
+# # column_name=[' 수심', '유량', '생물화학적산소요구량(BOD)', '클로로필-a(Chlorophyll-a)',
+# #        '화학적산소요구량(COD)', '용존산소(DO)', '용존총질소(DTN)', '용존총인(DTP)', '전기전도도(EC)',
+# #        '분원성대장균군', '암모니아성 질소(NH3-N)', '질산성질소(NO3-N)', '수소이온농도(pH)',
+# #        '인산염 인(PO4-P)', '부유물질(SS)', '총대장균군', '수온', '총질소(T-N)', '총유기탄소(TOC)',
+# #        '총인(T-P)']
+#
+# #合并多个文件
+# df = pd.concat([df1, df2, df3])
+# # df.to_excel('Prefile.xlsx', index=False)
+#
 
 
-# 使用 PCA 进行降维,方便画图
-pca = PCA(n_components=2)
-data_2d = pca.fit_transform(df1)
-# centroids_2d = pca.transform(centroids)
+df=pd.read_excel('Prefile.xlsx')
+df.columns = [i for i in range(20)]
 
-# 初始化标准化器
-scaler = StandardScaler()
-# 使用标准化器拟合并转换数据
-data_standardized = scaler.fit_transform(data_2d)
+# km=Km_pca_show(df,n_clusters=5,n_components=2)
+# km.plot_cluster()
+#
+# print(km.principal_components)
+# print(km.explained_variance) #[0.9977966  0.00134115]
 
 
-#打印聚类后的结果
-# 绘制 K-Means 聚类结果
-plt.figure()
-# 获取不同簇的唯一标签
-unique_labels = set(labels)
-# 使用 'tab10' 颜色映射
-cmap = plt.get_cmap('tab10')
-# 绘制每个簇的数据点
-for label in unique_labels:
-    cluster_data = data_2d [labels == label]
-    plt.scatter(cluster_data[:, 0], cluster_data[:, 1], c=cmap(label), label=f'Cluster {label}')
 
-# # 绘制簇中心点
-# plt.scatter(centroids[:, 0], centroids[:, 1], c='black', marker='x', s=100, label='Centroids')
+##测试物理条件之间的相关关系
 
-# 添加图例
-plt.legend()
-# 显示图形
+# 计算 Pearson 相关系数
+cc = df.corr()
+
+# 将大于0.5的值设置为1，小于等于0.5的值设置为0
+# correlation_matrix = cc.applymap(lambda x: 1 if x > 0.5 else 0)
+correlation_matrix= cc .round(1)
+
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
 plt.show()
-
-
-
-
-
-
