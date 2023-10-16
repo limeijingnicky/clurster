@@ -78,9 +78,39 @@ df.columns = [i for i in range(20)]
 # 计算 Pearson 相关系数
 cc = df.corr()
 
-# 将大于0.5的值设置为1，小于等于0.5的值设置为0
-# correlation_matrix = cc.applymap(lambda x: 1 if x > 0.5 else 0)
-correlation_matrix= cc .round(1)
+# 设置阈值，大于0.5为强正相关，小于-0.5为强负相关
+cc= cc.applymap(lambda x: 1 if x > 0.5 else x)
+cc = cc.applymap(lambda x: 0 if x < 0.5 and x> -0.5 else x)
+cc = cc.applymap(lambda x: -1 if x < -0.5 else x)
+correlation_matrix= cc .round(2)
 
-sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
-plt.show()
+# sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+# plt.show()
+
+
+#提取强相关关系的对象列表
+#正相关关系
+correlation_dic= {}
+#负相关关系
+correlation_re_dic={}
+
+
+#提取第一行
+row=correlation_matrix.iloc[0]
+#读出几列
+row_len=len(row)
+print(row_len)
+for i in range(row_len):
+    #提取每一列
+    col=correlation_matrix.iloc[:,i]
+    if col[col==1].index.to_list()[0]:
+        if col[col==1].index.to_list()[0] != i:
+            correlation_dic[i]=(col[col==1].index.to_list()[0])
+    # if col[col == -1].index.to_list()[0]:
+    #     if col[col == -1].index.to_list()[0] != i:
+    #         correlation_re_dic[i]=(col[col == -1].index.to_list()[0])
+
+
+print(correlation_dic)
+print(correlation_re_dic)
+
