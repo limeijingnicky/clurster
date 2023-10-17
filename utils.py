@@ -93,3 +93,71 @@ class Km_pca_show:
         plt.legend()
         # 显示图形
         plt.show()
+
+
+def corrdic(correlation_matrix,category,corr_value=1,corr_re_value=-1,):
+
+    # 正相关关系
+    correlation_dic= {}
+    #负相关关系
+    correlation_re_dic={}
+
+    #提取第一行
+    row=correlation_matrix.iloc[0]
+    #读出几列
+    row_len=len(row)
+
+    for i in range(row_len):
+        #提取每一列
+        col=correlation_matrix.iloc[:,i]
+        li=[]
+        for x in col[col == corr_value].index.to_list():
+            if x != i:
+                li.append(x)
+                correlation_dic[i] = li
+
+        for x in col[col == corr_re_value].index.to_list():
+            if x != i:
+                li.append(x)
+                correlation_re_dic[i] = li
+
+
+    # 去掉字典里相互重复的对象
+    correlation_list = []
+    for i in range(category):
+        if i in correlation_dic.keys():
+            value = correlation_dic[i]
+
+            for j in range(len(value)):
+                correlation_l = []
+                pp = [i, value[j]]
+                correlation_l.append(pp)
+                correlation_list.append(correlation_l)
+
+    #将数值按照小大排序，从而删除相同的元素/使list里的数值必须大于key {2：【1,4】}
+    corr = []
+    for i in range(len(correlation_list)):
+        value = correlation_list[i][0]
+        value = sorted(value)
+        if value not in corr:
+            corr.append(value)
+
+    correlation_re_list = []
+    for i in range(20):
+        if i in correlation_re_dic.keys():
+            value = correlation_re_dic[i]
+
+            for j in range(len(value)):
+                correlation_l = []
+                pp = [i, value[j]]
+                correlation_l.append(pp)
+                correlation_re_list.append(correlation_l)
+
+    corr_re = []
+    for i in range(len(correlation_re_list)):
+        value = correlation_list[i][0]
+        value = sorted(value)
+        if value not in corr_re:
+            corr_re.append(value)
+
+    return corr,corr_re

@@ -1,11 +1,12 @@
 import numpy as np
 import pandas as pd
-from utils import Nantozero,replace_text_with_zero,Km_pca_show
+from utils import Nantozero,replace_text_with_zero,Km_pca_show,corrdic
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 
 
 # #读取文件
@@ -64,15 +65,28 @@ import seaborn as sns
 
 df=pd.read_excel('Prefile.xlsx')
 df.columns = [i for i in range(20)]
-
+#
 # km=Km_pca_show(df,n_clusters=5,n_components=2)
 # km.plot_cluster()
 #
 # print(km.principal_components)
-# print(km.explained_variance) #[0.9977966  0.00134115]
+# [[ 7.28374505e-08  6.70031116e-06  3.72752429e-06  2.64607774e-06
+#    3.27158603e-06 -1.17347401e-06  3.59868746e-06  3.74197868e-09
+#    8.98924003e-05  2.64737351e-03  1.61649603e-08  1.05563127e-07
+#    1.87708807e-08  3.18727470e-09  4.05486687e-06  9.99996492e-01
+#    2.81877631e-06  3.61572372e-06  1.45412050e-07  4.60819193e-09]
+
+# [-5.71437156e-07  2.99367240e-05 -2.45044900e-06  6.46251234e-05
+#    5.41091331e-07 -8.88907830e-06  1.17580145e-05  7.16524264e-07
+#   -8.60831319e-04  9.99996113e-01  4.15310186e-06  1.69170341e-05
+#    2.30272653e-07  6.41072713e-07  1.32912380e-04 -2.64729620e-03
+#    2.58249879e-05  1.04799663e-05  2.23445686e-05  9.83877753e-07]]
+
+# print(km.explained_variance)
+# #[0.9977966  0.00134115]
 
 
-
+#
 ##测试物理条件之间的相关关系
 
 # 计算 Pearson 相关系数
@@ -82,35 +96,19 @@ cc = df.corr()
 cc= cc.applymap(lambda x: 1 if x > 0.5 else x)
 cc = cc.applymap(lambda x: 0 if x < 0.5 and x> -0.5 else x)
 cc = cc.applymap(lambda x: -1 if x < -0.5 else x)
-correlation_matrix= cc .round(2)
+correlation_matrix = cc .round(2)
 
 # sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
 # plt.show()
 
+corr,corr_re=corrdic(correlation_matrix,20)
+print(corr) #[[2, 4], [5, 12], [6, 17], [7, 11], [7, 13], [7, 18], [7, 19], [11, 13], [11, 18], [13, 19], [18, 19]] ,
+# 也可以看成是[[2, 4], [5, 12], [6, 17], [7, 11 ，13 ，18 ，19]]
 
-#提取强相关关系的对象列表
-#正相关关系
-correlation_dic= {}
-#负相关关系
-correlation_re_dic={}
+##根据相关性，选择不同数量的条件作为它的分类条件
+##不选择[4,11,12,13,17,18,19]
+df.columns = [i for i in range(20)]
 
-
-#提取第一行
-row=correlation_matrix.iloc[0]
-#读出几列
-row_len=len(row)
-print(row_len)
-for i in range(row_len):
-    #提取每一列
-    col=correlation_matrix.iloc[:,i]
-    if col[col==1].index.to_list()[0]:
-        if col[col==1].index.to_list()[0] != i:
-            correlation_dic[i]=(col[col==1].index.to_list()[0])
-    # if col[col == -1].index.to_list()[0]:
-    #     if col[col == -1].index.to_list()[0] != i:
-    #         correlation_re_dic[i]=(col[col == -1].index.to_list()[0])
-
-
-print(correlation_dic)
-print(correlation_re_dic)
-
+km=Km_pca_show(df,n_clusters=5,n_components=2)
+km.plot_cluster()
+print(km.principal_components)
