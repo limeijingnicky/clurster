@@ -6,7 +6,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+from matplotlib import  font_manager
 
 '''data processing '''
 
@@ -93,41 +93,103 @@ df.columns = [i for i in range(20)]
 
 
 '''计算 Pearson 相关系数'''
-cc = df.corr()
+# cc = df.corr()
+#
+# # 设置阈值，大于0.5为强正相关，小于-0.5为强负相关
+# cc= cc.applymap(lambda x: 1 if x > 0.5 else x)
+# cc = cc.applymap(lambda x: 0 if x < 0.5 and x> -0.5 else x)
+# cc = cc.applymap(lambda x: -1 if x < -0.5 else x)
+# correlation_matrix = cc .round(2)
+#
+# # sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+# # plt.show()
+#
+# corr,corr_re=corrdic(correlation_matrix,20)
+# print(corr)
+# #[[2, 4], [5, 12], [6, 17], [7, 11], [7, 13], [7, 18], [7, 19], [11, 13], [11, 18], [13, 19], [18, 19]] ,
+# # or [[2, 4], [5, 12], [6, 17], [7, 11 ，13 ，18 ，19]]
+#
 
-# 设置阈值，大于0.5为强正相关，小于-0.5为强负相关
-cc= cc.applymap(lambda x: 1 if x > 0.5 else x)
-cc = cc.applymap(lambda x: 0 if x < 0.5 and x> -0.5 else x)
-cc = cc.applymap(lambda x: -1 if x < -0.5 else x)
-correlation_matrix = cc .round(2)
 
-# sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
-# plt.show()
-
-corr,corr_re=corrdic(correlation_matrix,20)
-print(corr)
-#[[2, 4], [5, 12], [6, 17], [7, 11], [7, 13], [7, 18], [7, 19], [11, 13], [11, 18], [13, 19], [18, 19]] ,
-# or [[2, 4], [5, 12], [6, 17], [7, 11 ，13 ，18 ，19]]
-
-
-
-
-'''select no strange relation columns for cluster'''
-not_select_columns=[4,11,12,13,17,18,19]
-
-select_columns=[]
-for i in range(20):
-    if i not in not_select_columns:
-        select_columns.append(i)
-
-km=Km_pca_show(df[select_columns],n_clusters=5,n_components=2)
-km.plot_cluster()
-
-print(select_columns)
-#[0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 14, 15, 16]
-print(km.principal_components)
-print(km.explained_variance)
-
+#
+# '''select no strange relation columns for cluster'''
+# not_select_columns=[4,11,12,13,17,18,19]
+#
+# select_columns=[]
+# for i in range(20):
+#     if i not in not_select_columns:
+#         select_columns.append(i)
+#
+# km=Km_pca_show(df[select_columns],n_clusters=5,n_components=2)
+# km.plot_cluster()
+#
+# print(select_columns)
+# #[0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 14, 15, 16]
+# print(km.principal_components)
+# # [ 7.28374505e-08  6.70031114e-06  3.72752428e-06  2.64607774e-06
+# #   -1.17347401e-06  3.59868746e-06  3.74197867e-09  8.98924002e-05
+# #    2.64737351e-03  1.61649603e-08  4.05486686e-06  9.99996492e-01
+# #    2.81877631e-06]
+# # [-5.71437231e-07  2.99367078e-05 -2.45045128e-06  6.46251193e-05
+# #   -8.88907926e-06  1.17580091e-05  7.16524253e-07 -8.60831668e-04
+# #    9.99996114e-01  4.15310182e-06  1.32912376e-04 -2.64729616e-03
+# #    2.58249882e-05]
+# print(km.explained_variance)
+# # [0.9977966  0.00134115]
 
 
 '''analysis influence of the no strange relation columns when clustering'''
+# select_columns=[0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 14, 15, 16]
+#
+# explained_variance=[]
+# for i in range(len(select_columns)):
+#     new_list = [x for j, x in enumerate(select_columns) if j != i]
+#     km = Km_pca_show(df[new_list], n_clusters=5, n_components=2)
+#     # km.plot_cluster()
+#     explained_variance.append(km.explained_variance.to_list())
+#
+# print(explained_variance)
+# # [[0.9977966 , 0.00134115],[0.99779812, 0.00134115],[0.9977966 , 0.00134115],[0.99779661, 0.00134115],[0.99779661, 0.00134115],
+# #  [0.9977966 , 0.00134115],[0.9977966 , 0.00134115],[0.99865614, 0.00134231],[0.999136589, 0.000861850631],[0.9977966 , 0.00134115],
+# #  [0.99779662, 0.00134115],[0.60990805, 0.38938709],[0.99779661, 0.00134115]]
+
+
+
+
+
+'''select the index= 9 and 15 column for clustering'''
+from matplotlib import font_manager
+# korean_font=font_manager.FontEntry(fname=(r'C:\Windows\Fonts\HMFMOLD.ttf'),name='HMFMOLD')
+# font_manager.fontManager.ttflist.insert(0,korean_font)
+# plt.rcParams.update({'font.size':18,'font.family':'HMFMOLD'})
+#
+# # plt.rcParams['font.sans-serif']= ["SimHei"] #显示中文
+# plt.rcParams["axes.unicode_minus"] = False
+
+
+# select_columns=[9,15]
+# kmeans = KMeans(n_clusters=5)
+# kmeans.fit(df[select_columns])
+# labels = kmeans.labels_
+# df['Cluster'] = labels
+# plt.scatter(df[select_columns[0]], df[select_columns[1]], c=df['Cluster'], cmap='viridis')
+# plt.xlabel('분원성대장균군')
+# plt.ylabel('총대장균군')
+# plt.legend()
+# plt.show()
+
+
+
+# '''fix the index= 9 and 15 column for clustering'''
+# candidate_columns=[0,1, 2, 3, 5, 6, 7, 8,10, 14, 16]
+# select_columns=[9,15]
+# for i in candidate_columns:
+#     select_columns.append(i)
+#     data=df[select_columns]
+#     print(f'{select_columns}')
+#     km=Km_pca_show(data,n_clusters=5,n_components=2)
+#     km.plot_cluster()
+#     print(f'{km.explained_variance}')
+
+
+

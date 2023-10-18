@@ -48,6 +48,8 @@ class Km_pca_show:
         self.data_standardized = None
         self.principal_components=None
         self.explained_variance=None
+        self.data=None
+
 
         #使用kmeans方法，因为生物标准有5个等级，所以类别为5
         kmeans = KMeans(self.n_clusters)
@@ -65,6 +67,9 @@ class Km_pca_show:
             # self.centroids_2d = pca.transform(self.centroids)
             self.principal_components = pca.components_
             self.explained_variance = pca.explained_variance_ratio_
+        else:
+            self.data_2d=self.df
+            self.if_scale=False
 
         if self.if_scale is True:
             # 初始化标准化器
@@ -74,6 +79,10 @@ class Km_pca_show:
 
 
     def plot_cluster(self):
+        if self.if_pca:
+            self.data= self.data_2d
+        else:
+            self.data=self.df
         #打印聚类后的结果
         # 绘制 K-Means 聚类结果
         plt.figure()
@@ -83,7 +92,7 @@ class Km_pca_show:
         cmap = plt.get_cmap('tab10')
         # 绘制每个簇的数据点
         for label in unique_labels:
-            cluster_data = self.data_2d [self.labels == label]
+            cluster_data = self.data [self.labels == label]
             plt.scatter(cluster_data[:, 0], cluster_data[:, 1], c=cmap(label), label=f'Cluster {label}')
 
         # # 绘制簇中心点
