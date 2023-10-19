@@ -37,4 +37,3 @@ for item in items:
 print(df)
 df.to_excel('2011_2021_z.xlsx', index=False)
 
-
