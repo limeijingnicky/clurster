@@ -37,3 +37,4 @@ for item in items:
 print(df)
 df.to_excel('2011_2021_z.xlsx', index=False)
 
+#读取jp里的조사지점名称，对应环境文件里的
