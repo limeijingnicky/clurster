@@ -84,10 +84,12 @@ print(f)
 
 #生物指标
 #读取jp里的조사지점名称，提取对应环境文件里的index，生成df文件
+# ['년', ' 회차', ' 수계 명', ' 중권역 명', ' 분류코드', ' 조사구간 명', '건강성등급(A~E)', '종']
+
 df=pd.DataFrame()
 folder_path = r'C:\Users\KDG\PycharmProjects\clurster\row_data\2011_2022_jp'
 items = os.listdir(folder_path)
-
+count=0
 for item in items:
     item_path = os.path.join(folder_path, item)
     print(f"读取文件: {item_path}")
@@ -98,7 +100,7 @@ for item in items:
         c = pd.read_excel(item_path)
     index_c=c.shape[0]
     print(f'当前文件总数量为：{index_c}')
-    count=0
+
     f_list=[]
     # print(c.loc[0, ['년']].astype(int).values)
     # print(c.loc[0, [' 회차']].astype(int).values)
@@ -112,36 +114,23 @@ for item in items:
 
             for j in d_index:
                 if c.loc[i,['년']].astype(int).values[0] == d.loc[j,['년']].astype(int).values[0] and c.loc[i,[' 회차']].astype(int).values[0] == d.loc[j,[' 회차']].astype(int).values[0]:
-                    # df = df.append(f.loc[j], ignore_index=True)
                     df = pd.concat([df, f.iloc[[j], :]],ignore_index=True)
                     df.loc[count, ['건강성등급(A~E)', '종']] = c.loc[i, ['건강성등급(A~E)', '종']]
-
+                    count=count+1
         else:
             f_list.append(i)
 
         print(f'已读完第{i}条记录')
+    # df.to_excel('reference_data.xlsx', index=False)
 
     print(df)
     np.save(f'{item}_no_reference_data.npy',f_list)
 
-
-    #
-    #     for j in range(ind_f):
-    #         # #如果物理指标中存在对应的生物指标，取出生物指标加入到物理指标中并增加一个种的类
-    #         if c.loc[i,['년']].astype(int).values[0] == f.loc[j,['년']].astype(int).values[0] and c.loc[i,[' 회차']].astype(int).values[0] == f.loc[j,[' 회차']].astype(int).values[0] and c.loc[i, [' 조사구간 명']].values[0].strip() == f.loc[j, [' 조사구간 명']].values[0].strip():
-    #             # df = df.append(f.iloc[j], ignore_index=True)
-    #             df =pd.concat([df, f.iloc[j]],ignore_index=True)
-    #             df.loc[count,['건강성등급(A~E)', '종']] = c.loc[i, ['건강성등급(A~E)', '종']]
-    #             count=count+1
-    #         else:
-    #             f_list.append(i)
-    # print(f'已读第{count}条记录')
-    # # print(len(f_list))
-    # # print(index_c)
-    # if count+len(f_list) == index_c:
-    #     f_c=f_c+1
-    #     np.save(f'第{f_c}.npy',f_list)
-    #
+df.to_excel('reference_data.xlsx', index=False)
 
 
-# ['년', ' 회차', ' 수계 명', ' 중권역 명', ' 분류코드', ' 조사구간 명', '건강성등급(A~E)', '종']
+
+
+
+
+
