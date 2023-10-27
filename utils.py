@@ -33,10 +33,14 @@ def replace_text_with_zero(value):
     return value  # 如果不是字符串，保持不变
 
 
+#定义一个函数，用于将指定文字替换为数字
+def replace_a_to_num(df,a_value,num_value):
+    df=df.applymap(lambda x: num_value if x == a_value else x)
+    return df
 
 
 class Km_pca_show:
-    def __init__(self,df,n_clusters,n_components=2,if_pca=True,if_scale=True):
+    def __init__(self,df,n_clusters,n_components=2,targets=None,if_pca=True,if_scale=True):
         self.df=df
         self.if_pca=if_pca
         self.if_scale=if_scale
@@ -49,7 +53,7 @@ class Km_pca_show:
         self.principal_components=None
         self.explained_variance=None
         self.data=None
-
+        self.targets=targets
 
         #使用kmeans方法，因为生物标准有5个等级，所以类别为5
         kmeans = KMeans(self.n_clusters)
@@ -90,18 +94,36 @@ class Km_pca_show:
         unique_labels = set(self.labels)
         # 使用 'tab10' 颜色映射
         cmap = plt.get_cmap('tab10')
+
         # 绘制每个簇的数据点
         for label in unique_labels:
             cluster_data = self.data [self.labels == label]
             plt.scatter(cluster_data[:, 0], cluster_data[:, 1], c=cmap(label), label=f'Cluster {label}')
 
-        # # 绘制簇中心点
-        # plt.scatter(centroids[:, 0], centroids[:, 1], c='black', marker='x', s=100, label='Centroids')
-
         # 添加图例
         plt.legend()
         # 显示图形
         plt.show()
+
+        # 绘制target类别图
+        if self.targets:
+            # 获取不同标签的唯一值
+            unique_targets = np.unique(self.targets)
+            # 使用 'tab10' 颜色映射
+            cmap = plt.get_cmap('tab10')
+
+
+            for target in unique_targets:
+                cluster_data = self.data[self.targets == target]
+                plt.scatter(cluster_data[:, 0], cluster_data[:, 1], c=cmap(target), label=f'Cluster {target}')
+
+        # if self.targets:
+        #     plt.scatter(self.data[:, 0], self.data[:, 1], c=cmap(label), label=f'Cluster {self.targets}')
+
+            # 添加图例
+            plt.legend()
+            # 显示图形
+            plt.show()
 
 
 def corrdic(correlation_matrix,category,corr_value=1,corr_re_value=-1,):
