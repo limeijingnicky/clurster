@@ -64,7 +64,7 @@ import os
 # df.to_excel('file.xlsx', index=False)
 
 #环境指标
-# f = pd.read_excel(r'C:\Users\KDG\PycharmProjects\clurster\file.xlsx')
+f = pd.read_excel(r'C:\Users\KDG\PycharmProjects\clurster\file.xlsx')
 # print(f)
 # ind_f=f.shape[0]
 # print(f[' 조사구간 명'])
@@ -83,55 +83,74 @@ import os
 
 
 #生物指标
-#读取jp里的조사지점名称，提取对应环境文件里的index，生成df文件
+# 读取jp里的조사지점名称，提取对应环境文件里的index，生成df文件
 # ['년', ' 회차', ' 수계 명', ' 중권역 명', ' 분류코드', ' 조사구간 명', '건강성등급(A~E)', '종']
-#
+
 # df=pd.DataFrame()
-# folder_path = r'C:\Users\KDG\PycharmProjects\clurster\row_data\2011_2022_jp'
-# items = os.listdir(folder_path)
-# count=0
-# for item in items:
-#     item_path = os.path.join(folder_path, item)
-#     print(f"读取文件: {item_path}")
-#     s = pd.read_excel(item_path)
-#     if 'No' in s.columns:
-#         c = pd.read_excel(item_path,index_col='No')
-#     else:
-#         c = pd.read_excel(item_path)
-#     index_c=c.shape[0]
-#     print(f'当前文件总数量为：{index_c}')
-#
-#     f_list=[]
-#     # print(c.loc[0, ['년']].astype(int).values)
-#     # print(c.loc[0, [' 회차']].astype(int).values)
-#     # print(c.loc[0, [' 조사구간 명']].values)
-#     for i in range(index_c):
-#
-#         #判断当前记录的区域名是否存在于file文件夹中
-#         if c.loc[i, [' 조사구간 명']].values[0].strip() in f[' 조사구간 명'].values:
-#             d = f[f[' 조사구간 명'] == c.loc[i, [' 조사구간 명']].values[0].strip()]
-#             d_index=d.index.values
-#
-#             for j in d_index:
-#                 if c.loc[i,['년']].astype(int).values[0] == d.loc[j,['년']].astype(int).values[0] and c.loc[i,[' 회차']].astype(int).values[0] == d.loc[j,[' 회차']].astype(int).values[0]:
-#                     df = pd.concat([df, f.iloc[[j], :]],ignore_index=True)
-#                     df.loc[count, ['건강성등급(A~E)', '종']] = c.loc[i, ['건강성등급(A~E)', '종']]
-#                     count=count+1
-#         else:
-#             f_list.append(i)
-# #
-#         print(f'已读完第{i}条记录')
-#     # df.to_excel('reference_data.xlsx', index=False)
-#
-#     print(df)
-#     np.save(f'{item}_no_reference_data.npy',f_list)
-#
-# df.to_excel('reference_data.xlsx', index=False)
+folder_path = r'C:\Users\KDG\PycharmProjects\clurster\row_data\2011_2022_z'
+items = os.listdir(folder_path)
 
 
-# loaded_array = np.load('2011_2021_hc_jp_0.xlsx_no_reference_data.npy')
-#
-# print(loaded_array.shape)
+for item in items:
+    print(item)
+    count = 0
+    count_not = 0
+    df = pd.DataFrame()
+    item_path = os.path.join(folder_path, item)
+    print(f"读取文件: {item_path}")
+    s = pd.read_excel(item_path)
+    if 'No' in s.columns:
+        c = pd.read_excel(item_path,index_col='No')
+    else:
+        c = pd.read_excel(item_path)
+    index_c=c.shape[0]
+    print(f'当前文件总数量为：{index_c}')
+
+    # f_list=[]
+    # print(c.loc[0, ['년']].astype(int).values)
+    # print(c.loc[0, [' 회차']].astype(int).values)
+    # print(c.loc[0, [' 조사구간 명']].values)
+    for i in range(index_c):
+
+        #判断当前记录的区域名是否存在于file文件夹中
+        # if c.loc[i, [' 조사구간 명']].values[0].strip() in f[' 조사구간 명'].values:
+        #     d = f[f[' 조사구간 명'] == c.loc[i, [' 조사구간 명']].values[0].strip()]
+        #     d_index=d.index.values
+        if c.loc[i, [' 조사구간 명']].values[0].strip() in f[' 조사구간 명'].values:
+            d = f[f[' 조사구간 명'] == c.loc[i, [' 조사구간 명']].values[0].strip()]
+            d_index = d.index.values
+
+            print(c.loc[i, [' 조사구간 명']].values[0].strip())
+            # print(d_index)
+
+            for j in d_index:
+                if c.loc[i,['년']].astype(int).values[0] == d.loc[j,['년']].astype(int).values[0] and c.loc[i,[' 회차']].astype(int).values[0] == d.loc[j,[' 회차']].astype(int).values[0]:
+                    df = pd.concat([df, f.iloc[[j], :]],ignore_index=True)
+                    # df.loc[count, ['건강성등급(A~E)', '종']] = c.loc[i, ['건강성등급(A~E)', '종']]
+                    df.loc[count, [' 학명',' 국명',' 개체 수', '종']] = c.loc[i, [' 학명',' 국명',' 개체 수', '종']]
+                    count = count+1
+                # else:
+                    # f_list.append(i)
+                    # count_not = count_not+1
+        else:
+            count_not = count_not + 1
+        print(f'共{index_c}条记录，已读完第{i}条记录')
+        # print(f'共{count}条区间记录，未读{count_not}条区间记录')
+    # df.to_excel('reference_data.xlsx', index=False)
+    print(index_c)
+    print(count+count_not)
+    print(df)
+    # np.save(f'{item}_no_reference_data.npy',f_list)
+
+    df.to_excel(f'reference_data{item}.xlsx', index=False)
+
+
+
+#合并三个文件，找出对应的生物个数
+
+
+
+
 
 
 
